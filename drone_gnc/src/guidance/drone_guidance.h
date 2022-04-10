@@ -12,14 +12,18 @@
 #include <drone_model.hpp>
 
 #include "guidance_solver.hpp"
+#include "control/mpc_wrapper_rewrite.hpp"
+#include "control/collocation_transcription.hpp"
 
+using TranscribedDroneGuidanceOCP = polympc::CollocationTranscription<DroneGuidanceOCP, NUM_SEG_G, POLY_ORDER_G, polympc::SPARSE, polympc::CLENSHAW_CURTIS, false>;
 
-class DroneGuidance : private MPC<DroneGuidanceOCP, GuidanceSolver> {
+class DroneGuidance : private polympc::MPCRewrite<TranscribedDroneGuidanceOCP, GuidanceSolver> {
 
 public:
     using ocp_state = state_t;
     using ocp_control = control_t;
     using ocp_constraint = constraint_t;
+    using MPC = MPCRewrite;
 
     Drone::state target_apogee;
     Drone::state target_land;

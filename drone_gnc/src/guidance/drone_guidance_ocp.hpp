@@ -21,24 +21,21 @@
 #include "solvers/sqp_base.hpp"
 #include "solvers/osqp_interface.hpp"
 #include "control/mpc_wrapper.hpp"
+#include "control/ocp_base.hpp"
 #include "drone_model.hpp"
 #include "drone_guidance_settings.hpp"
 
 using namespace Eigen;
 using namespace std;
 
-#define POLY_ORDER_G 7
-#define NUM_SEG_G    2
+static const int POLY_ORDER_G = 7;
+static const int NUM_SEG_G = 2;
 
-/** benchmark the new collocation class */
-using PolynomialG = polympc::Chebyshev<POLY_ORDER_G, polympc::GAUSS_LOBATTO, double>;
-using ApproximationG = polympc::Spline<PolynomialG, NUM_SEG_G>;
-
-POLYMPC_FORWARD_DECLARATION(/*Name*/ DroneGuidanceOCP, /*NX*/ 6, /*NU*/ 3, /*NP*/ 1, /*ND*/ 0, /*NG*/0, /*TYPE*/ double)
-
-class DroneGuidanceOCP : public ContinuousOCP<DroneGuidanceOCP, ApproximationG, SPARSE> {
+class DroneGuidanceOCP : public  polympc::OCPBase</*NX*/ 6, /*NU*/ 3, /*NP*/ 1, /*ND*/ 0, /*NG*/0, /*TYPE*/ double> {
 public:
     ~DroneGuidanceOCP() = default;
+
+    static const int NUM_NODES = POLY_ORDER_G * NUM_SEG_G + 1;
 
     Matrix<scalar_t, NX, 1> xs;
 

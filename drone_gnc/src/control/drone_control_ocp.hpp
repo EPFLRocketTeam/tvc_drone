@@ -21,6 +21,7 @@
 #include "solvers/sqp_base.hpp"
 #include "solvers/osqp_interface.hpp"
 #include "control/mpc_wrapper.hpp"
+#include "control/ocp_base.hpp"
 #include "mpc_utils.h"
 
 #include "drone_mpc_settings.hpp"
@@ -28,19 +29,15 @@
 using namespace Eigen;
 using namespace std;
 
-#define POLY_ORDER 6
-#define NUM_SEG    1
-
-/** benchmark the new collocation class */
-using Polynomial = polympc::Chebyshev<POLY_ORDER, polympc::GAUSS_LOBATTO, double>;
-using Approximation = polympc::Spline<Polynomial, NUM_SEG>;
+static const int POLY_ORDER = 6;
+static const int NUM_SEG = 1;
 
 // declaration of the number of states, control signals and inequality constraints
-POLYMPC_FORWARD_DECLARATION(/*Name*/ DroneControlOCP, /*NX*/ 15, /*NU*/ 4, /*NP*/ 0, /*ND*/ 0, /*NG*/3, /*TYPE*/ double)
-
-class DroneControlOCP : public ContinuousOCP<DroneControlOCP, Approximation, SPARSE> {
+class DroneControlOCP : public polympc::OCPBase</*NX*/ 15, /*NU*/ 4, /*NP*/ 0, /*ND*/ 0, /*NG*/3, /*TYPE*/ double> {
 public:
     ~DroneControlOCP() = default;
+
+    static const int NUM_NODES = POLY_ORDER * NUM_SEG + 1;
 
     Matrix<scalar_t, 11, 1> Q;
     Matrix<scalar_t, Drone::NU, 1> R;
@@ -168,7 +165,7 @@ public:
     }
 
     //workaround to get the current node index in cost functions
-    int k = NUM_NODES - 1;
+    int k = 0;
 
     template<typename T>
     inline void lagrange_term_impl(const Ref<const state_t<T>> x, const Ref<const control_t<T>> u,
@@ -191,16 +188,14 @@ public:
         lagrange = (x_error2.dot(Q.template cast<T>().cwiseProduct(x_error2)) +
                     u_error.dot(R.template cast<T>().cwiseProduct(u_error))) * horizon_length;
 
-        k--;
+        k++;
     }
 
     template<typename T>
     inline void mayer_term_impl(const Ref<const state_t<T>> x, const Ref<const control_t<T>> u,
                                 const Ref<const parameter_t <T>> p, const Ref<const static_parameter_t> d,
                                 const scalar_t &t, T &mayer) noexcept {
-        k = NUM_NODES - 1;
-
-        Matrix<T, 13, 1> x_error = x.segment(0, 13) - target_state_trajectory.col(k).template cast<T>();
+        Matrix<T, 13, 1> x_error = x.segment(0, 13) - target_state_trajectory.col(NUM_NODES - 1).template cast<T>();
         Matrix<T, 11, 1> x_error2;
         x_error2.segment(0, 6) = x_error.segment(0, 6);
         x_error2(6) = x_error(9) * x_error(6) - x_error(7) * x_error(8);
@@ -208,6 +203,7 @@ public:
         x_error2.segment(8, 3) = x_error.segment(10, 3);
 
         mayer = x_error2.dot(QN.template cast<T>() * x_error2);
-//        mayer = (T) 0;
+
+        k = 0;
     }
 };

@@ -26,11 +26,11 @@ using namespace Eigen;
 template<typename Problem, typename QPSolver>
 class GuidanceSolver;
 
-template<typename Problem, typename QPSolver = boxADMM<Problem::VAR_SIZE, Problem::NUM_EQ + Problem::NUM_INEQ,
-        typename Problem::scalar_t, Problem::MATRIXFMT, linear_solver_traits<DroneGuidanceOCP::MATRIXFMT>::default_solver>>
-class GuidanceSolver : public SQPBase<GuidanceSolver<Problem, QPSolver>, Problem, QPSolver> {
+template<typename Problem, typename QPSolver = polympc::boxADMM<Problem::VAR_SIZE, Problem::NUM_EQ + Problem::NUM_INEQ,
+        typename Problem::scalar_t, Problem::MATRIXFMT, polympc::linear_solver_traits<polympc::SPARSE>::default_solver>>
+class GuidanceSolver : public polympc::SQPBase<GuidanceSolver<Problem, QPSolver>, Problem, QPSolver> {
 public:
-    using Base = SQPBase<GuidanceSolver<Problem, QPSolver>, Problem, QPSolver>;
+    using Base = polympc::SQPBase<GuidanceSolver<Problem, QPSolver>, Problem, QPSolver>;
     using typename Base::scalar_t;
     using typename Base::nlp_variable_t;
     using typename Base::nlp_hessian_t;

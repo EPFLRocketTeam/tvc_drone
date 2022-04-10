@@ -127,9 +127,9 @@ void DroneGuidance::initGuess(Drone::state &x0, Drone::state &target_state) {
             }
         }
 
-        traj_state_guess.row(2) = z_guess.reverse();
-        traj_state_guess.row(5) = dz_guess.reverse();
-        traj_control_guess.row(0) = prop_av_guess.reverse();
+        traj_state_guess.row(2) = z_guess;
+        traj_state_guess.row(5) = dz_guess;
+        traj_control_guess.row(0) = prop_av_guess;
 //        ROS_INFO_STREAM("traj guess " << traj_state_guess);
 //        ROS_INFO_STREAM("control guess " << traj_control_guess);
         //hack to make it fine if dz is small
@@ -149,10 +149,10 @@ void DroneGuidance::initGuess(Drone::state &x0, Drone::state &target_state) {
         RowVectorXd fx_guess = 6 * delta_x * (1 - 2 * time_grid.array());
         RowVectorXd fy_guess = 6 * delta_y * (1 - 2 * time_grid.array());
 
-        traj_state_guess.row(0) = x_guess.reverse();
-        traj_state_guess.row(1) = y_guess.reverse();
-        traj_state_guess.row(3) = dx_guess.reverse();
-        traj_state_guess.row(4) = dy_guess.reverse();
+        traj_state_guess.row(0) = x_guess;
+        traj_state_guess.row(1) = y_guess;
+        traj_state_guess.row(3) = dx_guess;
+        traj_state_guess.row(4) = dy_guess;
         traj_control_guess.row(1).setConstant(1e-3);
         traj_control_guess.row(2).setConstant(1e-3);
 

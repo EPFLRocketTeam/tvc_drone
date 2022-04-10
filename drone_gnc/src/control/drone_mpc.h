@@ -10,13 +10,18 @@
 #pragma once
 
 #include "control_solver.hpp"
+#include "control/mpc_wrapper_rewrite.hpp"
+#include "control/collocation_transcription.hpp"
 
-class DroneMPC : private MPC<DroneControlOCP, ControlSolver> {
+using TranscribedDroneControlOCP = polympc::CollocationTranscription<DroneControlOCP, NUM_SEG, POLY_ORDER, polympc::SPARSE, polympc::CLENSHAW_CURTIS, false>;
+
+class DroneMPC : private polympc::MPCRewrite<TranscribedDroneControlOCP, ControlSolver> {
 
 public:
     using ocp_state = state_t;
     using ocp_control = control_t;
     using ocp_constraint = constraint_t;
+    using MPC = MPCRewrite;
 
     using MPC::num_nodes;
 
