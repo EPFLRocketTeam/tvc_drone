@@ -12,8 +12,9 @@
 #include "control_solver.hpp"
 #include "control/mpc_wrapper_rewrite.hpp"
 #include "control/collocation_transcription.hpp"
+#include "quadratures/legendre_gauss_lobatto.hpp"
 
-using TranscribedDroneControlOCP = polympc::CollocationTranscription<DroneControlOCP, NUM_SEG, POLY_ORDER, polympc::SPARSE, polympc::CLENSHAW_CURTIS, false>;
+using TranscribedDroneControlOCP = polympc::CollocationTranscription<DroneControlOCP, NUM_SEG, POLY_ORDER, polympc::SPARSE, polympc::ClenshawCurtis<POLY_ORDER>, false>;
 
 class DroneMPC : private polympc::MPCRewrite<TranscribedDroneControlOCP, ControlSolver> {
 
