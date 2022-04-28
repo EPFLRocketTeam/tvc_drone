@@ -16,3 +16,6 @@
 [submodule "drone_navigation"]
 	path = drone_navigation
 	url = git@github.com:alexandreguerradeoliveira/drone_navigation.git
+[submodule "pid_gnc/pid_control/src/yaml-cpp"]
+	path = pid_gnc/pid_control/src/yaml-cpp
+	url = git@github.com:jbeder/yaml-cpp.git

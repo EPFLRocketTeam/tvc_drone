@@ -1,0 +1,3 @@
+[submodule "rocket_utils"]
+	path = rocket_utils
+	url = https://github.com/EPFLRocketTeam/rocket_utils

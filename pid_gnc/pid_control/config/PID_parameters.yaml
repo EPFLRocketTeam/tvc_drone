@@ -1,0 +1,105 @@
+position:
+  X:
+   gains:
+     - 0.6
+     - 0.005
+     - 0.2
+   limits:
+     - -6.0 # @6m/s work x- and y-controller simultaneously (otherwise: both do not offer offset-free tracking  because the force can't fight the drag)
+     - 6.0
+  Y:
+   gains:
+     - 0.6
+     - 0.005
+     - 0.2
+   limits:
+     - -6.0
+     - 6.0
+  Z:
+   gains:
+     - 0.8
+     - 0.1
+     - 0.2
+   limits:
+     - -17.28 # sqrt(Thrust_max / (rho * Cdz * 0.5 * r^2 * pi)) (maximum speed if only in z-direction, nominal case)
+     - 17.28
+velocity_linear:
+  X:
+   gains:
+     - 1.5
+     - 0.8
+     - 0.0
+   limits:
+     - -5.664  # tan(30°) * (mass * g) / mass -> Maximum x (or y) acceleration possible if angle constraints apply and z-acceleration nominal (9.81); is smaller than if we consider force-limitation: ((max_thrust)^2 - (m*g)^2)^0.5 / 1.67 = 5.799
+     - 5.664
+  Y:
+   gains:
+     - 1.5
+     - 0.8
+     - 0.0
+   limits:
+     - -5.664
+     - 5.664
+  Z:
+   gains:
+     - 1.0
+     - 0.5
+     - 0.0
+   limits:
+     - -9.81
+     - 1.586
+angle:
+  
+  X:
+   gains:
+     - 3.0
+     - 1.0
+     - 0.2
+   limits:
+     - -0.5 # Tuned for omega = 0.5 -> Stable behavior can be observed here
+     - 0.5
+  Y:
+   gains:
+     - 3.0
+     - 1.0
+     - 0.2
+   limits:
+     - -0.5
+     - 0.5
+  Z:
+   gains:
+     - 0.0
+     - 0.0
+     - 0.0
+   limits:
+     - -10
+     - 10
+velocity_angular:
+  # XY: KU = 3.0, TU = 0.884s -> Ziegler-Nichols (PI): KP = 0.45KU = 1.35, KI = 0.54 * KU / TU = 1.8326
+  X:
+   gains:
+     - 0.6
+     - 0.4
+     - 0.0
+   limits:
+     - -2.082 # r_CM * (max_thrust^2 - (mass * g) ^ 2)^0.5 -> Maximum if we are only controlling in 1 direction with nominal z-force (no acceleration in z-direction except gravity)
+     - 2.082
+  Y:
+   gains:
+     - 0.6
+     - 0.4
+     - 0.0
+   limits:
+     - -2.082
+     - 2.082
+  Z:
+   gains:
+     - 0.0
+     - 0.0
+     - 0.0
+   limits:
+     - -10
+     - 10
+additional_limits:
+  alpha: 0.524 #30°
+  beta: 0.524 #30°
